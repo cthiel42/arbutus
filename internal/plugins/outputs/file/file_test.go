@@ -9,14 +9,17 @@ import (
 )
 
 func TestWriteLog(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "arbutus-test-*.log")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "arbutus-test-*.log")
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 	defer os.Remove(tmpFile.Name())
 	tmpFile.Close()
 
-	f := New().(*File)
+	f, ok := New().(*File)
+	if !ok {
+		t.Fatalf("expected *File")
+	}
 	config := map[string]any{
 		"filepath": tmpFile.Name(),
 	}
@@ -43,14 +46,17 @@ func TestWriteLog(t *testing.T) {
 }
 
 func TestWriteMetric(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "arbutus-test-*.log")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "arbutus-test-*.log")
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 	defer os.Remove(tmpFile.Name())
 	tmpFile.Close()
 
-	f := New().(*File)
+	f, ok := New().(*File)
+	if !ok {
+		t.Fatalf("expected *File")
+	}
 	config := map[string]any{
 		"filepath": tmpFile.Name(),
 	}

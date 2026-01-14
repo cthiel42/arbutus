@@ -2,7 +2,6 @@ package loki
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -93,8 +92,7 @@ func (l *Loki) Connect(config map[string]any) error {
 		return fmt.Errorf("configuration error: %w", err)
 	}
 
-	ctx := context.Background()
-	client, err := l.createClient(ctx)
+	client, err := l.createClient()
 	if err != nil {
 		return fmt.Errorf("failed to create HTTP client: %w", err)
 	}
@@ -113,7 +111,12 @@ func (l *Loki) Write(telemetry []models.Telemetry) error {
 	for _, t := range telemetry {
 		switch t.Type() {
 		case models.TelemetryTypeLog:
-			logEntry := t.(models.Log)
+			logEntry, ok := t.(models.Log)
+			if !ok {
+				log.Printf("Loki: Skipping log (type assertion failed)")
+				continue
+			}
+
 			labels := make(map[string]string)
 
 			// Loki has strict label requirements and occasionally log attributes may contain non UTF-8 data
@@ -210,7 +213,7 @@ func (l *Loki) sendToLoki(streams Streams) error {
 	return nil
 }
 
-func (l *Loki) createClient(ctx context.Context) (*http.Client, error) {
+func (l *Loki) createClient() (*http.Client, error) {
 	duration, err := time.ParseDuration(l.Timeout)
 	if err != nil {
 		return nil, fmt.Errorf("invalid timeout duration: %w", err)

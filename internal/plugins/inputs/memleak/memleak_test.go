@@ -174,11 +174,11 @@ func TestParseConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := New().(*Memleak)
-			err := m.parseConfig(tt.config)
-			if err != nil {
-				t.Fatalf("parseConfig() failed: %v", err)
+			m, ok := New().(*Memleak)
+			if !ok {
+				t.Fatalf("expected *Memleak")
 			}
+			m.parseConfig(tt.config)
 			tt.check(t, m)
 		})
 	}

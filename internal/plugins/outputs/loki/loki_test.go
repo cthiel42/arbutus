@@ -8,7 +8,10 @@ import (
 )
 
 func TestWriteLog(t *testing.T) {
-	l := New().(*Loki)
+	l, ok := New().(*Loki)
+	if !ok {
+		t.Fatalf("expected *Loki")
+	}
 	config := map[string]any{
 		"domain": "http://localhost:3100",
 	}

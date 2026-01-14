@@ -62,11 +62,11 @@ func (f *File) Write(telemetry []models.Telemetry) error {
 	for _, t := range telemetry {
 		switch t.Type() {
 		case models.TelemetryTypeLog:
-			if err := f.writeLog(t.(models.Log)); err != nil {
+			if err := f.writeLog(t.(models.Log)); err != nil { //nolint:forcetypeassert
 				return err
 			}
 		case models.TelemetryTypeMetric:
-			if err := f.writeMetric(t.(models.Metric)); err != nil {
+			if err := f.writeMetric(t.(models.Metric)); err != nil { //nolint:forcetypeassert
 				return err
 			}
 		case models.TelemetryTypeTrace:

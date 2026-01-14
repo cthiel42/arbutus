@@ -31,8 +31,9 @@ jobs:
             libbpf-dev \
             llvm \
             clang \
-            linux-headers-$(uname -r) \
-            bpftool
+            linux-tools-common \
+            linux-tools-generic \
+            linux-headers-$(uname -r)
       - run: make build
       - name: Run linters
         uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
@@ -50,6 +51,17 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache: true
+      - name: Install eBPF dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libbpf-dev \
+            llvm \
+            clang \
+            linux-tools-common \
+            linux-tools-generic \
+            linux-headers-$(uname -r)
       - run: go mod download
+      - run: make generate
       - run: go test -v -cover ./...
         timeout-minutes: 5

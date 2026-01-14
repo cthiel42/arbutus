@@ -106,7 +106,9 @@ func TestDnssnoopEventParsing(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Write fields in order matching the C struct
-	binary.Write(&buf, binary.LittleEndian, uint32(9876))  // Pid
+	if err := binary.Write(&buf, binary.LittleEndian, uint32(9876)); err != nil {
+		t.Fatal(err)
+	}
 
 	// Write Comm (process name) - 16 bytes
 	comm := make([]byte, 16)
@@ -115,10 +117,14 @@ func TestDnssnoopEventParsing(t *testing.T) {
 
 	// Write DstIP - 8.8.8.8 encoded as uint32
 	// IP 8.8.8.8 = 0x08080808 in little endian
-	binary.Write(&buf, binary.LittleEndian, uint32(0x08080808))
+	if err := binary.Write(&buf, binary.LittleEndian, uint32(0x08080808)); err != nil {
+		t.Fatal(err)
+	}
 
 	// Write PayloadLen
-	binary.Write(&buf, binary.LittleEndian, uint32(28))
+	if err := binary.Write(&buf, binary.LittleEndian, uint32(28)); err != nil {
+		t.Fatal(err)
+	}
 
 	// Write Payload - 256 bytes
 	payload := make([]byte, 256)

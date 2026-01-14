@@ -38,9 +38,9 @@ func (c *Console) Write(telemetry []models.Telemetry) error {
 	for _, t := range telemetry {
 		switch t.Type() {
 		case models.TelemetryTypeLog:
-			c.writeLog(t.(models.Log))
+			c.writeLog(t.(models.Log)) //nolint:forcetypeassert
 		case models.TelemetryTypeMetric:
-			c.writeMetric(t.(models.Metric))
+			c.writeMetric(t.(models.Metric)) //nolint:forcetypeassert
 		case models.TelemetryTypeTrace:
 			log.Printf("Console: Skipping trace (not supported)")
 		}
