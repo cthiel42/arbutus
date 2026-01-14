@@ -1,0 +1,6 @@
+bin/
+internal/bpf/include/vmlinux.h
+*_bpfeb.go
+*_bpfeb.o
+*_bpfel.go
+*_bpfel.o

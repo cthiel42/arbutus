@@ -1,0 +1,48 @@
+[inputs.dnssnoop]
+
+
+[inputs.memleak]
+  # Track kernel allocations (default: true)
+  kernel_trace = true
+
+  # Minimum allocation size to track (default: 0)
+  min_size = 0
+
+  # Maximum allocation size to track (default: unlimited)
+  max_size = 18446744073709551615
+
+  # Sample every N allocations (default: 1 = all allocations)
+  sample_rate = 1
+
+  # Quick check interval in seconds - checks for large new leaks (default: 5)
+  interval = 5
+
+  # Detailed report interval in seconds - reports top leaking stacks (default: 60)
+  detailed_interval = 60
+
+  # Minimum bytes to consider a leak worth reporting (default: 1048576 = 1MB)
+  min_leak_threshold = 1048576
+
+  # Maximum number of detailed reports before stopping (default: -1 = unlimited)
+  max_reports = -1
+
+  # Print trace messages for each alloc/free (default: false, can be noisy)
+  trace_all = false
+
+
+[inputs.opensnoop]
+
+
+[outputs.loki]
+domain   = "https://yourdomain.com:3100" # required
+endpoint = "/loki/api/v1/push"           # optional, defaults to this value
+timeout  = "10s"                         # optional, defaults to 10s
+username = "user"                        # optional
+password = "pass"                        # optional
+
+
+[outputs.file]
+filepath = "/var/log/arbutus/memleak_output.log" # required, parent directory must exist
+
+
+[outputs.console]
