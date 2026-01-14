@@ -36,9 +36,15 @@ func TestOpensnoopEventParsing(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Write fields in order matching the C struct
-	binary.Write(&buf, binary.LittleEndian, uint32(1234))  // Pid
-	binary.Write(&buf, binary.LittleEndian, uint32(1000))  // Uid
-	binary.Write(&buf, binary.LittleEndian, int32(3))      // Ret (file descriptor)
+	if err := binary.Write(&buf, binary.LittleEndian, uint32(1234)); err != nil { // Pid
+		t.Fatal(err)
+	}
+	if err := binary.Write(&buf, binary.LittleEndian, uint32(1000)); err != nil { // Uid
+		t.Fatal(err)
+	}
+	if err := binary.Write(&buf, binary.LittleEndian, int32(3)); err != nil { // Ret
+		t.Fatal(err)
+	}
 
 	// Write Comm (process name) - 16 bytes
 	comm := make([]byte, 16)

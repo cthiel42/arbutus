@@ -72,10 +72,7 @@ func New() models.Input {
 func (m *Memleak) Run(ctx context.Context, acc models.Accumulator, config map[string]interface{}) error {
 	log.Println("Memleak: Run called")
 
-	if err := m.parseConfig(config); err != nil {
-		return fmt.Errorf("parsing config: %w", err)
-	}
-
+	m.parseConfig(config)
 	m.objs = &memleakObjects{}
 
 	spec, err := loadMemleak()
@@ -83,7 +80,7 @@ func (m *Memleak) Run(ctx context.Context, acc models.Accumulator, config map[st
 		return fmt.Errorf("loading eBPF spec: %w", err)
 	}
 
-	if err := spec.RewriteConstants(map[string]interface{}{
+	constantValues := map[string]interface{}{
 		"min_size":        m.minSize,
 		"max_size":        m.maxSize,
 		"sample_rate":     m.sampleRate,
@@ -91,8 +88,11 @@ func (m *Memleak) Run(ctx context.Context, acc models.Accumulator, config map[st
 		"stack_flags":     uint64(0), // kernel trace uses 0, userspace uses BPF_F_USER_STACK
 		"wa_missing_free": false,
 		"page_size":       uint64(4096),
-	}); err != nil {
-		return fmt.Errorf("rewriting constants: %w", err)
+	}
+	for name, value := range constantValues {
+		if err := spec.Variables[name].Set(value); err != nil {
+			return fmt.Errorf("setting variable %s: %w", name, err)
+		}
 	}
 
 	if err := spec.LoadAndAssign(m.objs, nil); err != nil {
@@ -173,7 +173,7 @@ func (m *Memleak) Run(ctx context.Context, acc models.Accumulator, config map[st
 	return nil
 }
 
-func (m *Memleak) parseConfig(config map[string]interface{}) error {
+func (m *Memleak) parseConfig(config map[string]interface{}) {
 	if v, ok := config["kernel_trace"]; ok {
 		if b, ok := v.(bool); ok {
 			m.kernelTrace = b
@@ -228,8 +228,6 @@ func (m *Memleak) parseConfig(config map[string]interface{}) error {
 			m.minLeakThreshold = uint64(i)
 		}
 	}
-
-	return nil
 }
 
 func (m *Memleak) attachKernelTracepoints() error {
